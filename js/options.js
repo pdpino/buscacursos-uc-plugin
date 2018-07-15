@@ -1,15 +1,24 @@
-let page = document.getElementById('buttonDiv');
-const kButtonColors = ['#3aa757', '#e8453c', '#f9bb2d', '#4688f1'];
-function constructOptions(kButtonColors) {
-  for (let item of kButtonColors) {
-    let button = document.createElement('button');
-    button.style.backgroundColor = item;
-    button.addEventListener('click', function() {
-      chrome.storage.sync.set({color: item}, function() {
-        console.log('color is ' + item);
-      })
-    });
-    page.appendChild(button);
-  }
+'use strict'
+
+const schedulesListContainer = document.getElementById('schedules-list-container');
+
+function showSchedulesList(kButtonColors) {
+  chrome.storage.sync.get(['schedules'], (result) => {
+    const { schedules } = result;
+    if (schedules && schedules.length > 0) {
+      const schedulesList = document.createElement('ul');
+      schedules.forEach((schedule) => {
+        const item = document.createElement('li');
+        item.appendChild(document.createTextNode(schedule.name));
+        schedulesList.appendChild(item);
+      });
+
+      schedulesListContainer.appendChild(schedulesList);
+    } else {
+      const emptyText = 'No tienes horarios guardados';
+      schedulesListContainer.appendChild(document.createTextNode(emptyText));
+    }
+  });
 }
-constructOptions(kButtonColors);
+
+showSchedulesList();
