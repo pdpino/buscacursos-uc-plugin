@@ -1,5 +1,58 @@
-button {
-  height: 30px;
-  width: 120px;
+h3 {
+  text-align: center;
+}
+
+h4 {
+  margin: 0.5em 0.2em;
+}
+
+.container {
+  border: solid 1px black;
+  padding: 0.5em;
+  margin: 0.5em;
+  /* background-color: #F0F0EA; */
+  /* box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); */
+}
+
+.current-schedule-buttons {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+}
+
+.current-schedule-buttons button {
+  flex-grow: 1;
+}
+
+ul {
+  list-style: none;
+  margin-left: 0;
+  padding-left: 0;
+}
+
+li {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-around;
+  align-items: center;
+}
+
+li button.name-schedule {
   outline: none;
+  display: inline;
+  flex-grow: 4;
+  order: 1;
+  margin: 0.2em 0.4em;
+}
+
+li button.delete-schedule {
+  height: 16px;
+  width: 16px;
+  padding: 0;
+  background-image: url('../img/delete.png');
+  background-repeat: no-repeat;
+  background-color: transparent;
+  border: none;
+  order: 2;
+  flex-grow: 1;
 }
