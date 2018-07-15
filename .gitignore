@@ -6,3 +6,6 @@ build/
 
 # Packed extension
 *.crx
+
+# Old files
+old/

@@ -6,9 +6,16 @@ const url = 'http://buscacursos.uc.cl';
 const currentCookieName = `cursosuc-${currentSemester}`;
 const currentCookieDetail = { url, name: currentCookieName };
 
-function getFullName(shortName) {
-  return `cursosuc-${currentSemester}-${shortName}`;
-}
+const cookieConfig = {
+  domain: '.buscacursos.uc.cl',
+  hostOnly: false,
+  httpOnly: false,
+  path: '/',
+  sameSite: 'no_restriction',
+  secure: false,
+  session: false,
+};
+
 
 // UTILS
 function reloadPage() {
@@ -17,85 +24,76 @@ function reloadPage() {
   });
 }
 
-function filterUsefulCookie(cookie) {
-  return {
-    // REVIEW: use ...cookie and ignore 'secure' and 'hostOnly' properties
-    domain: cookie.domain,
-    expirationDate: cookie.expirationDate,
-    httpOnly: cookie.httpOnly,
-    name: cookie.name,
-    path: cookie.path,
-    sameSite: cookie.sameSite,
-    secure: cookie.secure,
-    storeId: cookie.storeId,
-    value: cookie.value,
-  };
+function removeCurrentCookie(callback) {
+  chrome.cookies.remove(currentCookieDetail, callback);
 }
 
 
 // SCHEDULE ACTIONS
-function deleteSchedule(name) {
-  chrome.cookies.remove({ url, name });
+function deleteSchedule(name, itemDeRenderer) {
+  chrome.storage.sync.get(['schedules'], function(result) {
+    const { schedules } = result;
+    if (!schedules) {
+      // TODO: handle internal error
+      console.log('NO SCHEDULES FOUND');
+      return;
+    }
+    chrome.storage.sync.set({
+      schedules: schedules.filter(sch => sch.name !== name),
+    }, () => itemDeRenderer(name));
+  });
 }
 
 function selectSchedule(name) {
-  chrome.cookies.get({ url, name }, function(newCookie){
-    chrome.cookies.remove({ url, name: currentCookieName }, function() {
+  removeCurrentCookie(() => {
+    chrome.storage.sync.get(['schedules'], function(result) {
+      const { schedules } = result;
+      const schedule = schedules && schedules.find(sch => sch.name === name);
+      if (!schedule) {
+        // TODO: handle internal error
+        console.log('NO SCHEDULE FOUND');
+        return;
+      }
       chrome.cookies.set({
-        ...filterUsefulCookie(newCookie),
         url,
         name: currentCookieName,
-      }, () => reloadPage());
-    })
+        value: schedule.value,
+      }, reloadPage);
+    });
   });
 }
 
 function saveCurrentSchedule(name, itemRenderer) {
   chrome.cookies.get(currentCookieDetail, function(cookie) {
     if (!cookie || !cookie.value) {
-      // TODO: add error message: 'no classes added to schedule'
+      // TODO: show error: 'no classes added to schedule'
       console.log('NO SCHEDULE FOUND (TO SAVE)');
       return;
     }
-    // TODO: save cookie.value in chrome.storage
-    chrome.cookies.set({
-      ...filterUsefulCookie(cookie),
-      url,
-      name: getFullName(name),
-    }, function(cookieSaved) {
-      if (!cookieSaved) {
-        // TODO: show error
-        console.log('COULDNT SAVE COOKIE');
+
+    chrome.storage.sync.get(['schedules'], function(result) {
+      const schedules = result.schedules || [];
+      if (schedules.find(schedule => schedule.name === name)) {
+        // TODO show error
+        console.log('NAME ALREADY TAKEN');
         return;
       }
-      itemRenderer(cookieSaved.name);
+      schedules.push({ name, value: cookie.value });
+      chrome.storage.sync.set({ schedules }, () => itemRenderer(name));
     });
   });
-
-  // chrome.storage.sync.get(['schedules'], function(result) {
-  //   const { schedules } = result;
-  //   schedules.push({ hola: 1 });
-  //   chrome.storage.sync.set({ schedules });
-  // });
 }
 
 function clearCurrentSchedule() {
-  chrome.cookies.remove({ url, name: currentCookieName }, () => reloadPage());
+  removeCurrentCookie(reloadPage);
 }
 
-function createSchedulesList(listRenderer) {
-  chrome.cookies.getAll({ url }, function(allCookies) {
-    const cookies = allCookies.filter(cookie =>
-      cookie.name && cookie.name.startsWith('cursosuc') &&
-      cookie.name !== currentCookieName);
-    if (!cookies) {
-      console.log('NO SCHEDULES FOUND');
-      return;
-    }
-    listRenderer(cookies);
+function loadSchedulesList(listRenderer) {
+  chrome.storage.sync.get(['schedules'], function(result) {
+    const schedules = result.schedules || [];
+    listRenderer(schedules);
   });
 }
-
 
 
 // HTML ELEMENTS
@@ -104,7 +102,11 @@ const clearScheduleButton = document.getElementById('clear-schedule-button');
 const saveScheduleText = document.getElementById('save-schedule-text');
 const schedulesList = document.getElementById('schedules-list');
 
-// RENDERER
+// RENDERER FUNCTIONS
+function deRenderScheduleItem(name) {
+  removeElementById(name);
+}
+
 function renderScheduleItem(name) {
   const scheduleItem = document.createElement('li');
 
@@ -115,10 +117,7 @@ function renderScheduleItem(name) {
   selectScheduleButton.setAttribute('title', 'Cargar horario');
 
   const deleteScheduleButton = document.createElement('button');
-  deleteScheduleButton.onclick = () => {
-    deleteSchedule(name);
-    removeElementById(name);
-  };
+  deleteScheduleButton.onclick = () => deleteSchedule(name, deRenderScheduleItem);
   deleteScheduleButton.setAttribute('class', 'delete-schedule');
   deleteScheduleButton.setAttribute('title', 'Borrar');
 
@@ -154,18 +153,4 @@ saveScheduleButton.onclick = () => {
 
 clearScheduleButton.onclick = () => clearCurrentSchedule();
 
-createSchedulesList(renderSchedulesList);
-
-
-// chrome.storage.sync.get('color', function(data) {
-//   changeColor.style.backgroundColor = data.color;
-//   changeColor.setAttribute('value', data.color);
-// });
-// changeColor.onclick = function(element) {
-//   let color = element.target.value;
-//   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-//     chrome.tabs.executeScript(
-//         tabs[0].id,
-//         {code: 'document.body.style.backgroundColor = "' + color + '";'});
-//   });
-// };
+loadSchedulesList(renderSchedulesList);
