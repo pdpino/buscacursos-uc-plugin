@@ -13,30 +13,20 @@ const currentSemester = '2018-2';
 const url = 'http://buscacursos.uc.cl';
 const currentCookieName = `cursosuc-${currentSemester}`;
 const currentCookieDetail = { url, name: currentCookieName };
-const cookieConfig = {
-  domain: '.buscacursos.uc.cl',
-  hostOnly: false,
-  httpOnly: false,
-  path: '/',
-  sameSite: 'no_restriction',
-  secure: false,
-  session: false,
-};
 
 function removeCurrentCookie(callback) {
   chrome.cookies.remove(currentCookieDetail, callback);
 }
 
-function setCurrentCookie(value, callback) {
-  chrome.cookies.set({
-    ...currentCookieDetail,
-    ...cookieConfig,
-    value: schedule.value,
-  }, reloadPage);
-}
-
 function getCurrentCookie(callback) {
   chrome.cookies.get(currentCookieDetail, callback);
+}
+
+function saveCurrentCookie(value, callback) {
+  chrome.cookies.set({
+    ...currentCookieDetail,
+    value,
+  }, callback);
 }
 
 
@@ -56,17 +46,15 @@ function deleteSchedule(name, itemDeRenderer) {
 }
 
 function selectSchedule(name) {
-  removeCurrentCookie(() => {
-    chrome.storage.sync.get(['schedules'], function(result) {
-      const { schedules } = result;
-      const schedule = schedules && schedules.find(sch => sch.name === name);
-      if (!schedule) {
-        // TODO: handle internal error
-        console.log('NO SCHEDULE FOUND');
-        return;
-      }
-      setCurrentCookie(schedule.value, reloadPage);
-    });
+  chrome.storage.sync.get(['schedules'], function(result) {
+    const { schedules } = result;
+    const schedule = schedules && schedules.find(sch => sch.name === name);
+    if (!schedule) {
+      // TODO: handle internal error
+      console.log('NO SCHEDULE FOUND');
+      return;
+    }
+    saveCurrentCookie(schedule.value, () => reloadPage());
   });
 }
 
@@ -92,7 +80,7 @@ function saveCurrentSchedule(name, itemRenderer) {
 }
 
 function clearCurrentSchedule() {
-  removeCurrentCookie(reloadPage);
+  removeCurrentCookie(() => reloadPage());
 }
 
 function loadSchedulesList(listRenderer) {
