@@ -68,10 +68,13 @@ function createScheduleItem(name) {
   const selectScheduleButton = document.createElement('button');
   selectScheduleButton.onclick = () => selectSchedule(name);
   selectScheduleButton.appendChild(document.createTextNode(name));
+  selectScheduleButton.setAttribute('class', 'name-schedule');
+  deleteScheduleButton.setAttribute('title', 'Cargar horario');
 
   const deleteScheduleButton = document.createElement('button');
   deleteScheduleButton.onclick = () => deleteSchedule(name);
-  deleteScheduleButton.appendChild(document.createTextNode('Borrar'));
+  deleteScheduleButton.setAttribute('class', 'delete-schedule');
+  deleteScheduleButton.setAttribute('title', 'Borrar');
 
   scheduleItem.appendChild(selectScheduleButton);
   scheduleItem.appendChild(deleteScheduleButton);
