@@ -2,7 +2,7 @@
 
 const schedulesListContainer = document.getElementById('schedules-list-container');
 
-function showSchedulesList(kButtonColors) {
+function showSchedulesList() {
   chrome.storage.sync.get(['schedules'], (result) => {
     const { schedules } = result;
     if (schedules && schedules.length > 0) {
