@@ -9,3 +9,6 @@ build/
 
 # Old files
 old/
+
+# TODOs file
+TODOs.md
