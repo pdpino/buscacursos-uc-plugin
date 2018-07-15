@@ -1,11 +1,18 @@
 'use strict';
 
-// COMMON DATA
+// UTILS
+function reloadPage() {
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    chrome.tabs.update(tabs[0].id, { url: tabs[0].url });
+  });
+}
+
+
+// COOKIES API
 const currentSemester = '2018-2';
 const url = 'http://buscacursos.uc.cl';
 const currentCookieName = `cursosuc-${currentSemester}`;
 const currentCookieDetail = { url, name: currentCookieName };
-
 const cookieConfig = {
   domain: '.buscacursos.uc.cl',
   hostOnly: false,
@@ -16,16 +23,20 @@ const cookieConfig = {
   session: false,
 };
 
-
-// UTILS
-function reloadPage() {
-  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-    chrome.tabs.update(tabs[0].id, { url: tabs[0].url });
-  });
-}
-
 function removeCurrentCookie(callback) {
   chrome.cookies.remove(currentCookieDetail, callback);
+}
+
+function setCurrentCookie(value, callback) {
+  chrome.cookies.set({
+    ...currentCookieDetail,
+    ...cookieConfig,
+    value: schedule.value,
+  }, reloadPage);
+}
+
+function getCurrentCookie(callback) {
+  chrome.cookies.get(currentCookieDetail, callback);
 }
 
 
@@ -54,17 +65,13 @@ function selectSchedule(name) {
         console.log('NO SCHEDULE FOUND');
         return;
       }
-      chrome.cookies.set({
-        url,
-        name: currentCookieName,
-        value: schedule.value,
-      }, reloadPage);
+      setCurrentCookie(schedule.value, reloadPage);
     });
   });
 }
 
 function saveCurrentSchedule(name, itemRenderer) {
-  chrome.cookies.get(currentCookieDetail, function(cookie) {
+  getCurrentCookie((cookie) => {
     if (!cookie || !cookie.value) {
       // TODO: show error: 'no classes added to schedule'
       console.log('NO SCHEDULE FOUND (TO SAVE)');
