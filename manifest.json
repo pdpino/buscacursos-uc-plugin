@@ -2,6 +2,7 @@
   "name": "BuscacursosUC",
   "version": "0.1",
   "description": "Guarda diferentes horarios en el buscacursos UC",
+  "homepage_url": "http://buscacursos.uc.cl",
   "permissions": [
     "cookies",
     "*://buscacursos.uc.cl/",
