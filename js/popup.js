@@ -114,7 +114,7 @@ function renderScheduleItem(name) {
   const deleteScheduleButton = document.createElement('button');
   deleteScheduleButton.onclick = () => deleteSchedule(name, deRenderScheduleItem);
   deleteScheduleButton.setAttribute('class', 'delete-schedule');
-  deleteScheduleButton.setAttribute('title', 'Borrar');
+  deleteScheduleButton.setAttribute('title', 'Eliminar horario');
 
   scheduleItem.appendChild(selectScheduleButton);
   scheduleItem.appendChild(deleteScheduleButton);
