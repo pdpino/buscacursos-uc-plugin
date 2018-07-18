@@ -1,5 +1,7 @@
 'use strict'
 
+// DEPRECATED (is not called from options.html)
+
 const schedulesListContainer = document.getElementById('schedules-list-container');
 
 function showSchedulesList() {
