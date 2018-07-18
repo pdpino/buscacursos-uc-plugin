@@ -4,4 +4,4 @@ Extensión para el navegador que permite guardar distintos horarios en el [busca
 
 ***
 
-Extensión no oficial, desarrollada por @pdpino.
+Extensión no oficial, desarrollada por [pdpino](https://github.com/pdpino).
