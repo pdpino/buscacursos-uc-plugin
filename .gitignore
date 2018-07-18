@@ -1,14 +1,8 @@
-# Build
-build/
-
-# Private key
+# Private key and packed extension
 *.pem
-
-# Packed extension
 *.crx
 
-# Old files
+# Other
+build/
 old/
-
-# TODOs file
-TODOs.md
+TODO*
