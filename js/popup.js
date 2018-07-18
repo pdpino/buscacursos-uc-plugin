@@ -148,4 +148,10 @@ saveScheduleButton.onclick = () => {
 
 clearScheduleButton.onclick = () => clearCurrentSchedule();
 
+saveScheduleText.addEventListener('keyup', event => {
+  if (event.key !== 'Enter') return;
+  saveScheduleButton.click();
+  event.preventDefault();
+});
+
 loadSchedulesList(renderSchedulesList);
