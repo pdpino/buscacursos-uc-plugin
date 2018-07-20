@@ -15,13 +15,15 @@ h4 {
   border: solid 1px gray;
   padding: 0.5em;
   margin: 0.5em;
-  background-color: #e7eaf6; /* #F0F0EA; */
+  margin-bottom: 0.8em;
+  background-color: #e7eaf6;
 }
 
 .current-schedule-buttons {
   display: flex;
   flex-flow: row wrap;
   justify-content: space-between;
+  margin: 0.2em 0 0.3em;
 }
 
 .current-schedule-buttons button {
@@ -58,4 +60,10 @@ li button.delete-schedule {
   background-color: transparent;
   border: none;
   order: 2;
+}
+
+#icon-bib {
+  font-size: 0.7em;
+  font-style: italic;
+  text-align: center;
 }
