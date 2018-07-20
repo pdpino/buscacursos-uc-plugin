@@ -33,7 +33,7 @@ function saveCurrentCookie(value, callback) {
 // SCHEDULE ACTIONS
 function deleteSchedule(name, itemDeRenderer) {
   chrome.storage.sync.get(['schedules'], function(result) {
-    const { schedules } = result;
+    const schedules = result.schedules;
     if (!schedules) {
       // TODO: handle internal error
       console.log('NO SCHEDULES FOUND');
@@ -41,20 +41,22 @@ function deleteSchedule(name, itemDeRenderer) {
     }
     chrome.storage.sync.set({
       schedules: schedules.filter(sch => sch.name !== name),
-    }, () => itemDeRenderer(name));
+    }, function() {
+      itemDeRenderer(name);
+    });
   });
 }
 
 function selectSchedule(name) {
   chrome.storage.sync.get(['schedules'], function(result) {
-    const { schedules } = result;
+    const schedules = result.schedules;
     const schedule = schedules && schedules.find(sch => sch.name === name);
     if (!schedule) {
       // TODO: handle internal error
       console.log('NO SCHEDULE FOUND');
       return;
     }
-    saveCurrentCookie(schedule.value, () => reloadPage());
+    saveCurrentCookie(schedule.value, reloadPage);
   });
 }
 
@@ -74,13 +76,15 @@ function saveCurrentSchedule(name, itemRenderer) {
         return;
       }
       schedules.push({ name, value: cookie.value });
-      chrome.storage.sync.set({ schedules }, () => itemRenderer(name));
+      chrome.storage.sync.set({ schedules }, function() {
+        itemRenderer(name);
+      });
     });
   });
 }
 
 function clearCurrentSchedule() {
-  removeCurrentCookie(() => reloadPage());
+  removeCurrentCookie(reloadPage);
 }
 
 function loadSchedulesList(listRenderer) {
@@ -106,13 +110,17 @@ function renderScheduleItem(name) {
   const scheduleItem = document.createElement('li');
 
   const selectScheduleButton = document.createElement('button');
-  selectScheduleButton.onclick = () => selectSchedule(name);
+  selectScheduleButton.onclick = function() {
+    selectSchedule(name);
+  };
   selectScheduleButton.appendChild(document.createTextNode(name));
   selectScheduleButton.setAttribute('class', 'name-schedule');
   selectScheduleButton.setAttribute('title', 'Cargar horario');
 
   const deleteScheduleButton = document.createElement('button');
-  deleteScheduleButton.onclick = () => deleteSchedule(name, deRenderScheduleItem);
+  deleteScheduleButton.onclick = function() {
+    deleteSchedule(name, deRenderScheduleItem);
+  };
   deleteScheduleButton.setAttribute('class', 'delete-schedule');
   deleteScheduleButton.setAttribute('title', 'Eliminar horario');
 
@@ -136,7 +144,7 @@ function removeElementById(id) {
 
 
 // START POPUP
-saveScheduleButton.onclick = () => {
+saveScheduleButton.onclick = function() {
   const name = saveScheduleText.value;
   if (!name) {
     // TODO: show error
@@ -146,7 +154,9 @@ saveScheduleButton.onclick = () => {
   saveCurrentSchedule(name, renderScheduleItem);
 }
 
-clearScheduleButton.onclick = () => clearCurrentSchedule();
+clearScheduleButton.onclick = function(){
+  clearCurrentSchedule();
+}
 
 saveScheduleText.addEventListener('keyup', event => {
   if (event.key !== 'Enter') return;
