@@ -60,7 +60,7 @@ function selectSchedule(name) {
   });
 }
 
-function saveCurrentSchedule(name, itemRenderer) {
+function saveCurrentSchedule(name, itemRenderer, clearInput) {
   getCurrentCookie((cookie) => {
     if (!cookie || !cookie.value) {
       // TODO: show error: 'no classes added to schedule'
@@ -78,6 +78,7 @@ function saveCurrentSchedule(name, itemRenderer) {
       schedules.push({ name, value: cookie.value });
       chrome.storage.sync.set({ schedules }, function() {
         itemRenderer(name);
+        clearInput();
       });
     });
   });
@@ -98,7 +99,7 @@ function loadSchedulesList(listRenderer) {
 // HTML ELEMENTS
 const saveScheduleButton = document.getElementById('save-schedule-button');
 const clearScheduleButton = document.getElementById('clear-schedule-button');
-const saveScheduleText = document.getElementById('save-schedule-text');
+const scheduleNameInput = document.getElementById('schedule-name-input');
 const schedulesList = document.getElementById('schedules-list');
 
 // RENDERER FUNCTIONS
@@ -142,23 +143,26 @@ function removeElementById(id) {
   element.parentNode.removeChild(element);
 }
 
+function clearScheduleInput() {
+  scheduleNameInput.value = '';
+}
 
 // START POPUP
 saveScheduleButton.onclick = function() {
-  const name = saveScheduleText.value;
+  const name = scheduleNameInput.value;
   if (!name) {
     // TODO: show error
     console.log('NO NAME PROVIDED');
     return;
   }
-  saveCurrentSchedule(name, renderScheduleItem);
+  saveCurrentSchedule(name, renderScheduleItem, clearScheduleInput);
 }
 
 clearScheduleButton.onclick = function(){
   clearCurrentSchedule();
 }
 
-saveScheduleText.addEventListener('keyup', event => {
+scheduleNameInput.addEventListener('keyup', event => {
   if (event.key !== 'Enter') return;
   saveScheduleButton.click();
   event.preventDefault();
