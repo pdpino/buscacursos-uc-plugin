@@ -1,6 +1,7 @@
 {
   "name": "BuscacursosUC",
-  "version": "0.1",
+  "version": "0.2",
+  "short_name": "BuscacursosUC",
   "description": "Guarda diferentes horarios en el buscacursos UC",
   "author": "pdpino",
   "permissions": [
