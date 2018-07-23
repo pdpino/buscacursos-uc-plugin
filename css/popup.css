@@ -1,6 +1,6 @@
 body {
   background-color: #f1f8fd;
-  width: 225px;
+  width: 235px;
 }
 
 h3 {
@@ -63,6 +63,8 @@ li {
   order: 1;
   margin: 0.2em 0.4em;
   text-align: center;
+  word-break: break-all;
+  flex-basis: 63%;
 }
 
 input.name-schedule {
@@ -95,6 +97,7 @@ button.update-schedule {
 button.delete-schedule {
   height: 16px;
   width: 16px;
+  margin-right: 0.3em;
   background-image: url('../img/delete.png');
   order: 4;
 }

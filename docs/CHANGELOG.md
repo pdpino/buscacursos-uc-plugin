@@ -3,7 +3,10 @@
 ## Unreleased
 ### Added
 * Button to override existing schedule with current one
-* Functionality to edit saved schedule's name
+* Button to edit saved schedule's name
+
+### Changed
+* Wrap schedule name on button (not in whole item)
 
 ## 0.2 - 2018-07-22
 ### Changed
