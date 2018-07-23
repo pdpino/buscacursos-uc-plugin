@@ -1,6 +1,9 @@
 # Changelog
 
 ## Unreleased
+
+
+## 0.3.0 - 2018-07-23
 ### Added
 * Button to override existing schedule with current one. A notification is shown
 * Button to edit saved schedule's name
