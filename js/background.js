@@ -117,6 +117,11 @@ function clearCurrentSchedule() {
 
 function changeScheduleName(oldName, newName, callback) {
   loadSchedules(function(schedules) {
+    if (oldName === newName) {
+      callback();
+      return;
+    }
+
     const index = schedules.findIndex(sch => sch.name === oldName);
     if (index === -1) {
       console.log('INTERNAL ERROR: cant change name, schedule does not exist', oldName);
