@@ -8,14 +8,16 @@
      <h3>BuscacursosUC plugin</h3>
      <div class="container">
        <h4>Guarda tu horario actual</h4>
-       <input id="schedule-name-input" type="text" placeholder="Nombre" />
-       <div class="current-schedule-buttons">
-         <button id="save-schedule-button" title="Guardar horario actual">
-           Guardar
-         </button>
-         <button id="clear-schedule-button" title="Quita cursos del horario actual">
-           Limpiar
-         </button>
+       <div id="current-schedule-form">
+         <input id="schedule-name-input" type="text" placeholder="Nombre" />
+         <div>
+           <button id="save-schedule-button" title="Guardar horario actual">
+             Guardar
+           </button>
+           <button id="clear-schedule-button" title="Quita cursos del horario actual">
+             Limpiar
+           </button>
+         </div>
        </div>
      </div>
      <div id="schedules-list-container" class="container">

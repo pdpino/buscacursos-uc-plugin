@@ -1,5 +1,6 @@
 body {
   background-color: #f1f8fd;
+  width: 225px;
 }
 
 h3 {
@@ -19,14 +20,19 @@ h4 {
   background-color: #e7eaf6;
 }
 
-.current-schedule-buttons {
+#current-schedule-form input {
+  width: 100%;
+  box-sizing : border-box;
+}
+
+#current-schedule-form div {
   display: flex;
   flex-flow: row wrap;
   justify-content: space-between;
   margin: 0.2em 0 0.3em;
 }
 
-.current-schedule-buttons button {
+#current-schedule-form button {
   flex-grow: 1;
 }
 
