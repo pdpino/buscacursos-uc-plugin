@@ -62,7 +62,6 @@ function loadSchedules(callback) {
 }
 
 function saveSchedules(schedules, callback) {
-  console.log('SAVING SCHEDULES: ', schedules);
   chrome.storage.sync.set({ schedules }, callback);
 }
 
@@ -146,7 +145,7 @@ chrome.runtime.onMessage.addListener(
         saveCurrentSchedule(request.name, sendResponse);
         break;
       case 'updateSchedule':
-        updateSchedule(request.name);
+        updateSchedule(request.name, sendResponse);
         break;
       case 'changeScheduleName':
         changeScheduleName(request.oldName, request.newName, sendResponse);

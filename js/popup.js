@@ -13,6 +13,27 @@ function removeElementById(id) {
   }
 }
 
+function subscribeEnter(element, callback) {
+  element.addEventListener('keyup', function(event) {
+    if (event.key === 'Enter') {
+      callback();
+      event.preventDefault();
+    }
+  });
+}
+
+function sendNotification(message) {
+  chrome.notifications.create('notification', {
+    type: 'basic',
+    iconUrl: '../img/ok.png',
+    title: 'BuscacursosUC',
+    message,
+  }, function(notificationId) {
+    setTimeout(function() {
+      chrome.notifications.clear(notificationId);
+    }, 1500);
+  });
+}
 
 /* HTML elements functions */
 function createButtonSelectSchedule(name) {
@@ -58,6 +79,7 @@ function createButtonChangeScheduleName(name, currentScheduleItem) {
         schedulesList.replaceChild(newItem, editScheduleItem);
       });
     };
+    subscribeEnter(nameInput, () => saveButton.click());
 
     editScheduleItem.appendChild(nameInput);
     editScheduleItem.appendChild(saveButton);
@@ -71,7 +93,9 @@ function createButtonChangeScheduleName(name, currentScheduleItem) {
 function createButtonUpdateSchedule(name) {
   const button = document.createElement('button');
   button.onclick = function() {
-    chrome.runtime.sendMessage({ type: 'updateSchedule', name });
+    chrome.runtime.sendMessage({ type: 'updateSchedule', name }, function() {
+      sendNotification(`'${name}' se sobrescribió con éxito`);
+    });
   };
   button.setAttribute('class', 'update-schedule image-button');
   button.setAttribute('title', 'Sobreescribir horario');
@@ -145,12 +169,7 @@ clearScheduleButton.onclick = function() {
   chrome.runtime.sendMessage({ type: 'clearCurrentSchedule' });
 }
 
-scheduleNameInput.addEventListener('keyup', function(event) {
-  if (event.key === 'Enter') {
-    saveScheduleButton.click();
-    event.preventDefault();
-  }
-});
+subscribeEnter(scheduleNameInput, () => saveScheduleButton.click());
 
 
 /* Load schedules */

@@ -2,7 +2,7 @@
 
 ## Unreleased
 ### Added
-* Button to override existing schedule with current one
+* Button to override existing schedule with current one. A notification is shown
 * Button to edit saved schedule's name
 
 ### Changed

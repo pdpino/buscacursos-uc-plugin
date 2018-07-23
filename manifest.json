@@ -9,7 +9,8 @@
     "*://buscacursos.uc.cl/",
     "activeTab",
     "declarativeContent",
-    "storage"
+    "storage",
+    "notifications"
   ],
   "background": {
     "scripts": ["js/background.js"],
