@@ -5,6 +5,7 @@ const clearScheduleButton = document.getElementById('clear-schedule-button');
 const scheduleNameInput = document.getElementById('schedule-name-input');
 const schedulesList = document.getElementById('schedules-list');
 
+/* Helper functions */
 function removeElementById(id) {
   const element = document.getElementById(id);
   if (element) {
@@ -12,43 +13,110 @@ function removeElementById(id) {
   }
 }
 
-function deleteScheduleItem(name) {
-  removeElementById(name);
-}
 
-function renderScheduleItem(name) {
-  const scheduleItem = document.createElement('li');
-
-  const selectScheduleButton = document.createElement('button');
-  selectScheduleButton.onclick = function() {
+/* HTML elements functions */
+function createButtonSelectSchedule(name) {
+  const button = document.createElement('button');
+  button.onclick = function() {
     chrome.runtime.sendMessage({ type: 'selectSchedule', name });
   };
-  selectScheduleButton.appendChild(document.createTextNode(name));
-  selectScheduleButton.setAttribute('class', 'name-schedule');
-  selectScheduleButton.setAttribute('title', 'Cargar horario');
+  button.appendChild(document.createTextNode(name));
+  button.setAttribute('class', 'name-schedule');
+  button.setAttribute('title', 'Cargar horario');
 
-  const updateScheduleButton = document.createElement('button');
-  updateScheduleButton.onclick = function() {
+  return button;
+}
+
+function createButtonChangeScheduleName(name, currentScheduleItem) {
+  const button = document.createElement('button');
+  button.setAttribute('class', 'change-schedule-name image-button');
+  button.setAttribute('title', 'Editar nombre');
+  button.onclick = function() {
+    const editScheduleItem = document.createElement('li');
+    const nameInput = document.createElement('input');
+    nameInput.setAttribute('value', name);
+    nameInput.setAttribute('type', 'text');
+    nameInput.setAttribute('placeholder', 'Nombre');
+    nameInput.setAttribute('class', 'name-schedule');
+
+    const saveButton = document.createElement('button');
+    saveButton.setAttribute('class', 'save-schedule-name image-button');
+    saveButton.setAttribute('title', 'Guardar');
+    saveButton.onclick = function() {
+      const newName = nameInput.value;
+      if (!newName) {
+        console.log('USER ERROR: no name provided');
+        return;
+      }
+
+      chrome.runtime.sendMessage({
+        type: 'changeScheduleName',
+        oldName: name,
+        newName: newName,
+      }, function() {
+        const newItem = createScheduleItem(newName);
+        schedulesList.replaceChild(newItem, editScheduleItem);
+      });
+    };
+
+    editScheduleItem.appendChild(nameInput);
+    editScheduleItem.appendChild(saveButton);
+
+    schedulesList.replaceChild(editScheduleItem, currentScheduleItem);
+  };
+
+  return button;
+}
+
+function createButtonUpdateSchedule(name) {
+  const button = document.createElement('button');
+  button.onclick = function() {
     chrome.runtime.sendMessage({ type: 'updateSchedule', name });
   };
-  updateScheduleButton.setAttribute('class', 'update-schedule image-button');
-  updateScheduleButton.setAttribute('title', 'Sobreescribir horario');
+  button.setAttribute('class', 'update-schedule image-button');
+  button.setAttribute('title', 'Sobreescribir horario');
 
-  const deleteScheduleButton = document.createElement('button');
-  deleteScheduleButton.onclick = function() {
+  return button;
+}
+
+function createButtonDeleteSchedule(name) {
+  const button = document.createElement('button');
+  button.onclick = function() {
     chrome.runtime.sendMessage({ type: 'deleteSchedule', name }, function() {
       deleteScheduleItem(name);
     });
   };
-  deleteScheduleButton.setAttribute('class', 'delete-schedule image-button');
-  deleteScheduleButton.setAttribute('title', 'Eliminar horario');
+  button.setAttribute('class', 'delete-schedule image-button');
+  button.setAttribute('title', 'Eliminar horario');
+
+  return button;
+}
+
+function createScheduleItem(name) {
+  const scheduleItem = document.createElement('li');
+
+  const selectScheduleButton = createButtonSelectSchedule(name);
+  const changeScheduleNameButton = createButtonChangeScheduleName(name, scheduleItem);
+  const updateScheduleButton = createButtonUpdateSchedule(name);
+  const deleteScheduleButton = createButtonDeleteSchedule(name);
 
   scheduleItem.appendChild(selectScheduleButton);
+  scheduleItem.appendChild(changeScheduleNameButton);
   scheduleItem.appendChild(updateScheduleButton);
   scheduleItem.appendChild(deleteScheduleButton);
 
   scheduleItem.setAttribute('id', name);
-  schedulesList.appendChild(scheduleItem);
+
+  return scheduleItem;
+}
+
+function renderScheduleItem(name) {
+  const item = createScheduleItem(name);
+  schedulesList.appendChild(item);
+}
+
+function deleteScheduleItem(name) {
+  removeElementById(name);
 }
 
 function renderSchedulesList(schedules) {
@@ -59,12 +127,12 @@ function clearScheduleInput() {
   scheduleNameInput.value = '';
 }
 
+
 /* Subscribe events */
 saveScheduleButton.onclick = function() {
   const name = scheduleNameInput.value;
   if (!name) {
-    // TODO: show error
-    console.log('NO NAME PROVIDED');
+    console.log('USER ERROR: no name provided');
     return;
   }
   chrome.runtime.sendMessage({ type: 'saveCurrentSchedule', name }, function() {
@@ -83,6 +151,7 @@ scheduleNameInput.addEventListener('keyup', function(event) {
     event.preventDefault();
   }
 });
+
 
 /* Load schedules */
 chrome.runtime.sendMessage({ type: 'loadSchedules' }, function(schedules) {

@@ -46,8 +46,7 @@ function saveCurrentCookie(value, callback) {
 function getScheduleValue(callback) {
   getCurrentCookie(function(cookie) {
     if (!cookie || !cookie.value) {
-      // TODO: show error
-      console.log('NO CLASSES ADDED TO SCHEDULE');
+      console.log('USER ERROR: no classes added to schedule');
       return;
     }
     callback(cookie.value);
@@ -55,12 +54,23 @@ function getScheduleValue(callback) {
 }
 
 
+/* Schedules basic actions */
+function loadSchedules(callback) {
+  chrome.storage.sync.get(['schedules'], function(result) {
+    callback(result.schedules || []);
+  });
+}
+
+function saveSchedules(schedules, callback) {
+  console.log('SAVING SCHEDULES: ', schedules);
+  chrome.storage.sync.set({ schedules }, callback);
+}
+
+
 /* Schedules actions */
 function deleteSchedule(name, callback) {
   loadSchedules(function(schedules) {
-    chrome.storage.sync.set({
-      schedules: schedules.filter(sch => sch.name !== name),
-    }, callback);
+    saveSchedules(schedules.filter(sch => sch.name !== name), callback);
   });
 }
 
@@ -68,7 +78,6 @@ function selectSchedule(name) {
   loadSchedules(function(schedules) {
     const schedule = schedules.find(sch => sch.name === name);
     if (!schedule) {
-      // TODO: handle internal error
       console.log('INTERNAL ERROR: no schedule found with', name);
       return;
     }
@@ -80,12 +89,11 @@ function saveCurrentSchedule(name, callback) {
   getScheduleValue(function(scheduleValue) {
     loadSchedules(function(schedules) {
       if (schedules.find(sch => sch.name === name)) {
-        // TODO show error
-        console.log('NAME ALREADY TAKEN');
+        console.log('USER ERROR: name already taken');
         return;
       }
       schedules.push({ name, value: scheduleValue });
-      chrome.storage.sync.set({ schedules }, callback);
+      saveSchedules(schedules, callback);
     });
   });
 }
@@ -95,12 +103,11 @@ function updateSchedule(name, callback) {
     loadSchedules(function(schedules) {
       const index = schedules.findIndex(sch => sch.name === name)
       if (index === -1) {
-        // TODO handle internal error
         console.log('INTERNAL ERROR: cant update schedule, does not exist', name);
         return;
       }
       schedules[index].value = scheduleValue;
-      chrome.storage.sync.set({ schedules }, callback);
+      saveSchedules(schedules, callback);
     });
   });
 }
@@ -109,9 +116,19 @@ function clearCurrentSchedule() {
   removeCurrentCookie(reloadPage);
 }
 
-function loadSchedules(callback) {
-  chrome.storage.sync.get(['schedules'], function(result) {
-    callback(result.schedules || []);
+function changeScheduleName(oldName, newName, callback) {
+  loadSchedules(function(schedules) {
+    const index = schedules.findIndex(sch => sch.name === oldName);
+    if (index === -1) {
+      console.log('INTERNAL ERROR: cant change name, schedule does not exist', oldName);
+      return;
+    }
+    if (newName !== oldName && schedules.find(sch => sch.name === newName)) {
+      console.log('USER ERROR: new name is taken');
+      return;
+    }
+    schedules[index].name = newName;
+    saveSchedules(schedules, callback);
   });
 }
 
@@ -130,6 +147,9 @@ chrome.runtime.onMessage.addListener(
         break;
       case 'updateSchedule':
         updateSchedule(request.name);
+        break;
+      case 'changeScheduleName':
+        changeScheduleName(request.oldName, request.newName, sendResponse);
         break;
       case 'clearCurrentSchedule':
         clearCurrentSchedule();

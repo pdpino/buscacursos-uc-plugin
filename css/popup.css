@@ -50,12 +50,32 @@ li {
   border: none;
 }
 
-button.name-schedule {
+.name-schedule {
   outline: none;
   display: inline;
   flex-grow: 4;
   order: 1;
   margin: 0.2em 0.4em;
+  text-align: center;
+}
+
+input.name-schedule {
+  width: 100px;
+}
+
+button.change-schedule-name {
+  height: 16px;
+  width: 16px;
+  margin-right: 0.5em;
+  background-image: url('../img/pencil.png');
+  order: 2;
+}
+
+button.save-schedule-name {
+  height: 16px;
+  width: 16px;
+  background-image: url('../img/ok.png');
+  order: 2;
 }
 
 button.update-schedule {
@@ -63,14 +83,14 @@ button.update-schedule {
   width: 16px;
   margin-right: 0.5em;
   background-image: url('../img/diskette.png');
-  order: 2;
+  order: 3;
 }
 
 button.delete-schedule {
   height: 16px;
   width: 16px;
   background-image: url('../img/delete.png');
-  order: 3;
+  order: 4;
 }
 
 #icon-bib {
