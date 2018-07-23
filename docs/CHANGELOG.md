@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+### Added
+* Button to override existing schedule with current one
 
 ## 0.2 - 2018-07-22
 ### Changed

@@ -43,7 +43,14 @@ li {
   align-items: center;
 }
 
-li button.name-schedule {
+.image-button {
+  padding: 0;
+  background-repeat: no-repeat;
+  background-color: transparent;
+  border: none;
+}
+
+button.name-schedule {
   outline: none;
   display: inline;
   flex-grow: 4;
@@ -51,15 +58,19 @@ li button.name-schedule {
   margin: 0.2em 0.4em;
 }
 
-li button.delete-schedule {
+button.update-schedule {
   height: 16px;
   width: 16px;
-  padding: 0;
-  background-image: url('../img/delete.png');
-  background-repeat: no-repeat;
-  background-color: transparent;
-  border: none;
+  margin-right: 0.5em;
+  background-image: url('../img/diskette.png');
   order: 2;
+}
+
+button.delete-schedule {
+  height: 16px;
+  width: 16px;
+  background-image: url('../img/delete.png');
+  order: 3;
 }
 
 #icon-bib {
