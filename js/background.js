@@ -15,11 +15,20 @@ chrome.runtime.onInstalled.addListener(function() {
   });
 });
 
+/* Utils */
+function getExpirationDate() {
+  const nowDate = new Date();
+  const nowSeconds = nowDate.getTime() / 1000;
+  const monthsToAdd = 4;
+  return nowSeconds + monthsToAdd*30*24*60*60;
+}
+
 function reloadPage() {
   chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
     chrome.tabs.update(tabs[0].id, { url: tabs[0].url });
   });
 }
+
 
 /* Cookie wrappers */
 const currentSemester = '2018-2';
@@ -39,6 +48,7 @@ function getCurrentCookie(callback) {
 function saveCurrentCookie(value, callback) {
   chrome.cookies.set({
     ...currentCookieDetail,
+    expirationDate: getExpirationDate(),
     value,
   }, callback);
 }
@@ -135,6 +145,7 @@ function changeScheduleName(oldName, newName, callback) {
     saveSchedules(schedules, callback);
   });
 }
+
 
 /* Subscribe messages */
 chrome.runtime.onMessage.addListener(

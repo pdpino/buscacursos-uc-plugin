@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+## 0.3.1 - 2018-08-01
+### Fixed
+* Add expiration date to saved cookie, so it isn't saved as session cookie. This fixes a bug that caused deletion of the current schedule when closing the browser.
 
 ## 0.3.0 - 2018-07-23
 ### Added
