@@ -1,7 +1,8 @@
 # Buscacursos-uc plugin
 
-Extensión para chrome que permite guardar distintos horarios en el [buscador de cursos](http://buscacursos.uc.cl) de la PUC. [Ver extensión](https://chrome.google.com/webstore/detail/buscacursosuc/fpekhaphlfpegpemjbcnekgbhkdkhgma) para instalar
+Chrome web extension that lets you save more than one schedule in the [course-finder](http://buscacursos.uc.cl) PUC webpage.
+See [extension](https://chrome.google.com/webstore/detail/buscacursosuc/fpekhaphlfpegpemjbcnekgbhkdkhgma) to install
 
 ***
 
-Extensión no oficial, desarrollada por [pdpino](https://github.com/pdpino).
+Non-official extension, developed by [pdpino](https://github.com/pdpino).
