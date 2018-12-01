@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+
+## 0.3.2 - 2018-30-11
+### Changed
+* Set 2019-1 as the default semester
+
+
 ## 0.3.1 - 2018-08-01
 ### Fixed
 * Add expiration date to saved cookie, so it isn't saved as session cookie. This fixes a bug that caused deletion of the current schedule when closing the browser.
