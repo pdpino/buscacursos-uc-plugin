@@ -31,7 +31,7 @@ function reloadPage() {
 
 
 /* Cookie wrappers */
-const currentSemester = '2019-1';
+const currentSemester = '2019-2'; // Change here to update semester
 const currentCookieDetail = {
   url: 'http://buscacursos.uc.cl',
   name: `cursosuc-${currentSemester}`,

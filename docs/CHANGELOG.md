@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 0.3.3 - 2019-07-01
+### Changed
+* Set 2019-2 as the default semester
+
 
 ## 0.3.2 - 2018-30-11
 ### Changed
