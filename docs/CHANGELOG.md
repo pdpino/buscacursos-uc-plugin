@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.3.4 - 2019-07-01
+### Changed
+* Add current semester to HTML
+* Add cursor pointer to buttons
+
+
 ## 0.3.3 - 2019-07-01
 ### Changed
 * Set 2019-2 as the default semester

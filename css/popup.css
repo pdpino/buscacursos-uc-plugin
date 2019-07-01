@@ -71,6 +71,10 @@ input.name-schedule {
   width: 100px;
 }
 
+button {
+  cursor: pointer;
+}
+
 button.change-schedule-name {
   height: 16px;
   width: 16px;
