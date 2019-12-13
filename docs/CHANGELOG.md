@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 0.3.5 - 2019-12-13
+### Changed
+* Set 2020-1 as the default semester
+
+
 ## 0.3.4 - 2019-07-01
 ### Changed
 * Add current semester to HTML
