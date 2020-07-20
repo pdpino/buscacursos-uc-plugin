@@ -25,13 +25,13 @@ function getExpirationDate() {
 
 function reloadPage() {
   chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
-    chrome.tabs.update(tabs[0].id, { url: tabs[0].url });
+    chrome.tabs.reload(tabs[0].id);
   });
 }
 
 
 /* Cookie wrappers */
-const currentSemester = '2020-1'; // Change here to update semester
+const currentSemester = '2020-2'; // Change here to update semester
 const currentCookieDetail = {
   url: 'http://buscacursos.uc.cl',
   name: `cursosuc-${currentSemester}`,

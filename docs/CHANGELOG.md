@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+## 0.3.6 - 2020-07-20
+### Changed
+* Set 2020-2 as the default semester
+
+### Fixed
+* Reload page after changes
+
+
+
 ## 0.3.5 - 2019-12-13
 ### Changed
 * Set 2020-1 as the default semester
