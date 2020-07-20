@@ -7,7 +7,6 @@
   "permissions": [
     "cookies",
     "*://buscacursos.uc.cl/",
-    "activeTab",
     "declarativeContent",
     "storage",
     "notifications"

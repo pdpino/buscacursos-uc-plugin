@@ -8,6 +8,7 @@
 
 ### Fixed
 * Reload page after changes
+* Remove unnecessary activeTab permission
 
 
 
