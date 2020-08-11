@@ -101,7 +101,11 @@ function saveCurrentSchedule(name, callback) {
         console.log('USER ERROR: name already taken');
         return;
       }
-      schedules.push({ name, value: scheduleValue });
+      schedules.push({
+        name,
+        value: scheduleValue,
+        semester: currentSemester,
+      });
       saveSchedules(schedules, callback);
     });
   });
