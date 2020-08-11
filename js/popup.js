@@ -4,6 +4,7 @@ const saveScheduleButton = document.getElementById('save-schedule-button');
 const clearScheduleButton = document.getElementById('clear-schedule-button');
 const scheduleNameInput = document.getElementById('schedule-name-input');
 const schedulesList = document.getElementById('schedules-list');
+const schedulesListEmptyText = document.getElementById('schedules-list-empty-text');
 
 /* Helper functions */
 function removeElementById(id) {
@@ -74,7 +75,8 @@ function createButtonChangeScheduleName(name, currentScheduleItem) {
         type: 'changeScheduleName',
         oldName: name,
         newName: newName,
-      }, function() {
+      }, function(error) {
+        if (error) return;
         const newItem = createScheduleItem(newName);
         schedulesList.replaceChild(newItem, editScheduleItem);
       });
@@ -93,7 +95,8 @@ function createButtonChangeScheduleName(name, currentScheduleItem) {
 function createButtonUpdateSchedule(name) {
   const button = document.createElement('button');
   button.onclick = function() {
-    chrome.runtime.sendMessage({ type: 'updateSchedule', name }, function() {
+    chrome.runtime.sendMessage({ type: 'updateSchedule', name }, function(error) {
+      if (error) return; // TODO: change notification text??
       sendNotification(`'${name}' se sobrescribió con éxito`);
     });
   };
@@ -106,7 +109,8 @@ function createButtonUpdateSchedule(name) {
 function createButtonDeleteSchedule(name) {
   const button = document.createElement('button');
   button.onclick = function() {
-    chrome.runtime.sendMessage({ type: 'deleteSchedule', name }, function() {
+    chrome.runtime.sendMessage({ type: 'deleteSchedule', name }, function(error) {
+      if (error) return;
       deleteScheduleItem(name);
     });
   };
@@ -137,14 +141,31 @@ function createScheduleItem(name) {
 function renderScheduleItem(name) {
   const item = createScheduleItem(name);
   schedulesList.appendChild(item);
+  renderEmptyList(false);
+}
+
+function renderEmptyList(empty) {
+  if (empty) {
+    schedulesList.classList.add('disabled');
+    schedulesListEmptyText.classList.remove('disabled');
+  } else {
+    schedulesList.classList.remove('disabled');
+    schedulesListEmptyText.classList.add('disabled');
+  }
 }
 
 function deleteScheduleItem(name) {
   removeElementById(name);
+  renderEmptyList(schedulesList.childElementCount === 0);
 }
 
 function renderSchedulesList(schedules) {
-  schedules.forEach(schedule => renderScheduleItem(schedule.name));
+  if (schedules.length === 0) {
+    renderEmptyList(true);
+  } else {
+    renderEmptyList(false);
+    schedules.forEach(schedule => renderScheduleItem(schedule.name));
+  }
 }
 
 function clearScheduleInput() {
@@ -159,7 +180,8 @@ saveScheduleButton.onclick = function() {
     console.log('USER ERROR: no name provided');
     return;
   }
-  chrome.runtime.sendMessage({ type: 'saveCurrentSchedule', name }, function() {
+  chrome.runtime.sendMessage({ type: 'saveCurrentSchedule', name }, function(error) {
+    if (error) return;
     renderScheduleItem(name);
     clearScheduleInput();
   });

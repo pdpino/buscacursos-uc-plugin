@@ -1,6 +1,17 @@
 # Changelog
 
 ## Unreleased
+### Added
+* Empty placeholder in list
+
+### Changed
+* Save `currentSemester` as field in each schedule
+* Book icon
+
+### Fixed
+* Minor fixes in async messaging
+
+
 
 ## 0.3.6 - 2020-07-20
 ### Changed

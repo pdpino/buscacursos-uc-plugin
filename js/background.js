@@ -56,7 +56,8 @@ function saveCurrentCookie(value, callback) {
 function getScheduleValue(callback) {
   getCurrentCookie(function(cookie) {
     if (!cookie || !cookie.value) {
-      console.log('USER ERROR: no classes added to schedule');
+      console.error('USER ERROR: no classes added to schedule');
+      callback(null);
       return;
     }
     callback(cookie.value);
@@ -87,7 +88,7 @@ function selectSchedule(name) {
   loadSchedules(function(schedules) {
     const schedule = schedules.find(sch => sch.name === name);
     if (!schedule) {
-      console.log('INTERNAL ERROR: no schedule found with', name);
+      console.error('INTERNAL ERROR: no schedule found with', name);
       return;
     }
     saveCurrentCookie(schedule.value, reloadPage);
@@ -96,9 +97,14 @@ function selectSchedule(name) {
 
 function saveCurrentSchedule(name, callback) {
   getScheduleValue(function(scheduleValue) {
+    if (!scheduleValue) {
+      callback(1);
+      return;
+    }
     loadSchedules(function(schedules) {
       if (schedules.find(sch => sch.name === name)) {
-        console.log('USER ERROR: name already taken');
+        console.error('USER ERROR: name already taken, overriding');
+        callback(2);
         return;
       }
       schedules.push({
@@ -113,10 +119,15 @@ function saveCurrentSchedule(name, callback) {
 
 function updateSchedule(name, callback) {
   getScheduleValue(function(scheduleValue) {
+    if (!scheduleValue) {
+      callback(1);
+      return;
+    }
     loadSchedules(function(schedules) {
       const index = schedules.findIndex(sch => sch.name === name)
       if (index === -1) {
-        console.log('INTERNAL ERROR: cant update schedule, does not exist', name);
+        console.error('INTERNAL ERROR: cant update schedule, does not exist', name);
+        callback(2);
         return;
       }
       schedules[index].value = scheduleValue;
@@ -138,11 +149,13 @@ function changeScheduleName(oldName, newName, callback) {
 
     const index = schedules.findIndex(sch => sch.name === oldName);
     if (index === -1) {
-      console.log('INTERNAL ERROR: cant change name, schedule does not exist', oldName);
+      console.error('INTERNAL ERROR: cant change name, schedule does not exist', oldName);
+      callback(2);
       return;
     }
     if (newName !== oldName && schedules.find(sch => sch.name === newName)) {
-      console.log('USER ERROR: new name is taken');
+      console.error('USER ERROR: new name is taken');
+      callback(3);
       return;
     }
     schedules[index].name = newName;
@@ -177,7 +190,7 @@ chrome.runtime.onMessage.addListener(
         loadSchedules(sendResponse);
         break;
       default:
-        console.log('INTERNAL ERROR: no message listener for ', request);
+        console.error('INTERNAL ERROR: no message listener for ', request);
     }
     return true;
   });

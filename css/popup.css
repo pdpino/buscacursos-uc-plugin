@@ -1,6 +1,11 @@
 body {
-  background-color: #f1f8fd;
+  /* background-color: #f1f8fd; */
+  background-color: #e7eaf6;
   width: 235px;
+}
+
+.disabled {
+  display: none;
 }
 
 h3 {
@@ -9,15 +14,14 @@ h3 {
 
 h4 {
   margin: 0.5em 0.2em;
-  text-align: center;
+  /* text-align: center; */
 }
 
 .container {
-  border: solid 1px gray;
+  /* border: solid 1px gray; */
   padding: 0.5em;
   margin: 0.5em;
   margin-bottom: 0.8em;
-  background-color: #e7eaf6;
 }
 
 #current-schedule-form input {
@@ -47,6 +51,11 @@ li {
   flex-flow: row wrap;
   justify-content: space-around;
   align-items: center;
+}
+
+#schedules-list-empty-text {
+  text-align: center;
+  font-style: italic;
 }
 
 .image-button {
