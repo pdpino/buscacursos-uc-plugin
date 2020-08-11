@@ -5,6 +5,8 @@ const clearScheduleButton = document.getElementById('clear-schedule-button');
 const scheduleNameInput = document.getElementById('schedule-name-input');
 const schedulesList = document.getElementById('schedules-list');
 const schedulesListEmptyText = document.getElementById('schedules-list-empty-text');
+const formErrorText = document.getElementById('form-error-text');
+
 
 /* Helper functions */
 function removeElementById(id) {
@@ -35,6 +37,16 @@ function sendNotification(message) {
     }, 1500);
   });
 }
+
+function showFormError(message) {
+  formErrorText.classList.remove('disabled');
+  formErrorText.textContent = message;
+}
+
+function hideFormError() {
+  formErrorText.classList.add('disabled');
+}
+
 
 /* HTML elements functions */
 function createButtonSelectSchedule(name) {
@@ -178,16 +190,25 @@ saveScheduleButton.onclick = function() {
   const name = scheduleNameInput.value;
   if (!name) {
     console.log('USER ERROR: no name provided');
+    showFormError('Provee un nombre');
     return;
   }
   chrome.runtime.sendMessage({ type: 'saveCurrentSchedule', name }, function(error) {
-    if (error) return;
+    if (error === 1) {
+      showFormError('Horario vacío!');
+      return;
+    } else if (error === 2) {
+      showFormError('Nombre ocupado!');
+      return;
+    }
+    hideFormError();
     renderScheduleItem(name);
     clearScheduleInput();
   });
 }
 
 clearScheduleButton.onclick = function() {
+  hideFormError();
   chrome.runtime.sendMessage({ type: 'clearCurrentSchedule' });
 }
 

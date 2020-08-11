@@ -40,6 +40,17 @@ h4 {
   flex-grow: 1;
 }
 
+#form-error-text {
+  margin-bottom: 0px;
+}
+
+.error {
+  font-style: italic;
+  font-weight: bold;
+  color: #ff0033;
+  text-align: center;
+}
+
 ul {
   list-style: none;
   margin-left: 0;

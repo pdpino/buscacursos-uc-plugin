@@ -3,6 +3,7 @@
 ## Unreleased
 ### Added
 * Empty placeholder in list
+* Small error text
 
 ### Changed
 * Save `currentSemester` as field in each schedule
