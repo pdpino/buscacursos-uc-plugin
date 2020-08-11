@@ -1,11 +1,17 @@
 # Changelog
 
 ## Unreleased
+
+
+
+
+## 0.3.7 - 2020-08-10
 ### Added
 * Empty placeholder in list
-* Small error text
+* Display text with form error
 
 ### Changed
+* Overall style improvements
 * Save `currentSemester` as field in each schedule
 * Book icon
 
