@@ -24,6 +24,21 @@ h4 {
   margin-bottom: 0.8em;
 }
 
+#current-semester-container {
+  display: flex;
+  justify-content: space-evenly;
+  flex-direction: row;
+  align-items: center;
+}
+
+#current-semester-container h4 {
+  display: inline-block;
+}
+
+#current-semester {
+  font-weight: bold;
+}
+
 #current-schedule-form input {
   width: 100%;
   box-sizing : border-box;

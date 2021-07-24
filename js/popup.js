@@ -6,7 +6,9 @@ const scheduleNameInput = document.getElementById('schedule-name-input');
 const schedulesList = document.getElementById('schedules-list');
 const schedulesListEmptyText = document.getElementById('schedules-list-empty-text');
 const formErrorText = document.getElementById('form-error-text');
-
+const currentSemesterText = document.getElementById('current-semester');
+const prevSemesterButton = document.getElementById('prev-semester');
+const nextSemesterButton = document.getElementById('next-semester');
 
 /* Helper functions */
 function removeElementById(id) {
@@ -180,6 +182,35 @@ function renderSchedulesList(schedules) {
   }
 }
 
+function clearSchedulesList() {
+  while(schedulesList.firstChild) {
+    schedulesList.removeChild(schedulesList.firstChild);
+  }
+}
+
+function loadDataAndUpdateUI(callback) {
+  chrome.runtime.sendMessage({ type: 'loadData' }, function({ schedules, semester }) {
+    clearSchedulesList();
+    renderSchedulesList(schedules);
+    currentSemesterText.textContent = semester;
+    if (callback) {
+      callback();
+    }
+  });
+}
+
+function _updateDataAndGoToSemesterURL(semester) {
+  loadDataAndUpdateUI(function() {
+    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+      chrome.tabs.update(tabs[0].id, {
+        // NOTE: other url params will be lost
+        // (typically from search queries)
+        url: `https://buscacursos.uc.cl/?cxml_semestre=${semester}`,
+      });
+    });
+  });
+}
+
 function clearScheduleInput() {
   scheduleNameInput.value = '';
 }
@@ -212,10 +243,17 @@ clearScheduleButton.onclick = function() {
   chrome.runtime.sendMessage({ type: 'clearCurrentSchedule' });
 }
 
+prevSemesterButton.onclick = function() {
+  hideFormError();
+  chrome.runtime.sendMessage({ type: 'prevSemester' }, _updateDataAndGoToSemesterURL);
+}
+
+nextSemesterButton.onclick = function() {
+  hideFormError();
+  chrome.runtime.sendMessage({ type: 'nextSemester' }, _updateDataAndGoToSemesterURL);
+}
+
 subscribeEnter(scheduleNameInput, () => saveScheduleButton.click());
 
-
-/* Load schedules */
-chrome.runtime.sendMessage({ type: 'loadSchedules' }, function(schedules) {
-  renderSchedulesList(schedules);
-});
+/* First load (schedules and semester) */
+loadDataAndUpdateUI();

@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+### Added
+* Support changing semester (remove hardcoded value)
 
 
 ## 0.3.9 - 2021-07-24

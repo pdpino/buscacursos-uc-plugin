@@ -5,11 +5,15 @@
     <link rel="stylesheet" href="./css/popup.css" type="text/css" />
   </head>
   <body>
-    <h3>BuscacursosUC plugin</h3>
+    <div id="current-semester-container" class="container">
+      <button id="prev-semester" title="Semestre anterior">&#60;</button>
+      <span id="current-semester">...</span>
+      <button id="next-semester" title="Semestre siguiente">&#62;</button>
+    </div>
     <div class="container">
-      <h4>Guarda horario actual <i>(2021-2)</i></h4>
-      <div id="current-schedule-form">
-        <input id="schedule-name-input" type="text" placeholder="Nombre" />
+     <h4>Guarda horario actual</h4>
+     <div id="current-schedule-form">
+        <input id="schedule-name-input" type="text" placeholder="Nombre horario" />
         <div>
           <button id="save-schedule-button" title="Guardar horario actual">
             Guardar

@@ -31,30 +31,27 @@ function reloadPage() {
 
 
 /* Cookie wrappers */
-const currentSemester = '2021-2'; // Change here to update semester
-const currentCookieDetail = {
-  url: 'http://buscacursos.uc.cl',
-  name: `cursosuc-${currentSemester}`,
-};
-
-function removeCurrentCookie(callback) {
-  chrome.cookies.remove(currentCookieDetail, callback);
+function _getCurrentCookieDetail(semester) {
+  return {
+    url: 'http://buscacursos.uc.cl',
+    name: `cursosuc-${semester}`,
+  };
 }
 
-function getCurrentCookie(callback) {
-  chrome.cookies.get(currentCookieDetail, callback);
+function removeCurrentCookie(semester, callback) {
+  chrome.cookies.remove(_getCurrentCookieDetail(semester), callback);
 }
 
-function saveCurrentCookie(value, callback) {
+function saveCurrentCookie(value, semester, callback) {
   chrome.cookies.set({
-    ...currentCookieDetail,
+    ..._getCurrentCookieDetail(semester),
     expirationDate: getExpirationDate(),
     value,
   }, callback);
 }
 
-function getScheduleValue(callback) {
-  getCurrentCookie(function(cookie) {
+function getScheduleValue(semester, callback) {
+  chrome.cookies.get(_getCurrentCookieDetail(semester), function(cookie) {
     if (!cookie || !cookie.value) {
       console.error('USER ERROR: no classes added to schedule');
       callback(null);
@@ -65,12 +62,84 @@ function getScheduleValue(callback) {
 }
 
 
-/* Schedules basic actions */
-function loadSchedules(callback) {
-  chrome.storage.sync.get(['schedules'], function(result) {
-    callback(result.schedules || []);
+/* Semester actions */
+function _guessSemester() {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth() + 1; // 0-based index
+  const semester = (7 <= month && month <= 11) ? 2 : 1;
+  return `${year}-${semester}`;
+}
+
+function _updateSemester(semester, callback) {
+  chrome.storage.sync.set({ semester }, function() {
+    callback(semester);
   });
 }
+
+function getSemester(callback) {
+  chrome.storage.sync.get(['semester'], function(result) {
+    let semester = result.semester;
+    if (!semester) {
+      semester = _guessSemester();
+      _updateSemester(semester, callback);
+    } else {
+      callback(semester);
+    }
+  });
+}
+
+function prevSemester(callback) {
+  getSemester(function(semester) {
+    let [year, number] = semester.split('-').map(Number);
+    if (number === 1) {
+      number = 2;
+      year -= 1;
+    } else { // number === 2
+      number = 1;
+    }
+    const newSemester = `${year}-${number}`;
+    _updateSemester(newSemester, callback);
+  });
+}
+
+function nextSemester(callback) {
+  getSemester(function(semester) {
+    let [year, number] = semester.split('-').map(Number);
+    if (number === 2) {
+      number = 1;
+      year += 1;
+    } else { // number === 1
+      number = 2;
+    }
+    const newSemester = `${year}-${number}`;
+    _updateSemester(newSemester, callback);
+  });
+}
+
+/* Schedules basic actions */
+function _loadSchedulesAndSemester(onlyThisSemester, callback) {
+  chrome.storage.sync.get(['schedules', 'semester'], function(result) {
+    const wasSemesterEmpty = !result.semester;
+    const semester = result.semester || _guessSemester();
+    let schedules = result.schedules || [];
+    if (onlyThisSemester) {
+      schedules = schedules.filter(sch => sch.semester === semester);
+    }
+    const output = {
+      schedules,
+      semester,
+    };
+    if (wasSemesterEmpty) {
+      _updateSemester(semester, function() { callback(output) });
+    } else {
+      callback(output);
+    }
+  });
+}
+
+function loadThisSemesterSchedules(callback) { _loadSchedulesAndSemester(true, callback) };
+function loadAllSchedules(callback) { _loadSchedulesAndSemester(false, callback) };
 
 function saveSchedules(schedules, callback) {
   chrome.storage.sync.set({ schedules }, callback);
@@ -79,38 +148,38 @@ function saveSchedules(schedules, callback) {
 
 /* Schedules actions */
 function deleteSchedule(name, callback) {
-  loadSchedules(function(schedules) {
-    saveSchedules(schedules.filter(sch => sch.name !== name), callback);
+  loadAllSchedules(function({ schedules, semester }) {
+    saveSchedules(schedules.filter(sch => sch.semester !== semester || sch.name !== name), callback);
   });
 }
 
 function selectSchedule(name) {
-  loadSchedules(function(schedules) {
-    const schedule = schedules.find(sch => sch.name === name);
+  loadAllSchedules(function({ schedules, semester }) {
+    const schedule = schedules.find(sch => sch.semester === semester && sch.name === name);
     if (!schedule) {
-      console.error('INTERNAL ERROR: no schedule found with', name);
+      console.error(`INTERNAL ERROR: no schedule found with ${name} and semester ${semester}`);
       return;
     }
-    saveCurrentCookie(schedule.value, reloadPage);
+    saveCurrentCookie(schedule.value, semester, reloadPage);
   });
 }
 
 function saveCurrentSchedule(name, callback) {
-  getScheduleValue(function(scheduleValue) {
-    if (!scheduleValue) {
-      callback(1);
-      return;
-    }
-    loadSchedules(function(schedules) {
-      if (schedules.find(sch => sch.name === name)) {
-        console.error('USER ERROR: name already taken, overriding');
+  loadAllSchedules(function({ schedules, semester }) {
+    getScheduleValue(semester, function(scheduleValue) {
+      if (!scheduleValue) {
+        callback(1);
+        return;
+      }
+      if (schedules.find(sch => sch.semester === semester && sch.name === name)) {
+        console.error('USER ERROR: name already taken, not overriding');
         callback(2);
         return;
       }
       schedules.push({
         name,
         value: scheduleValue,
-        semester: currentSemester,
+        semester,
       });
       saveSchedules(schedules, callback);
     });
@@ -118,15 +187,15 @@ function saveCurrentSchedule(name, callback) {
 }
 
 function updateSchedule(name, callback) {
-  getScheduleValue(function(scheduleValue) {
-    if (!scheduleValue) {
-      callback(1);
-      return;
-    }
-    loadSchedules(function(schedules) {
-      const index = schedules.findIndex(sch => sch.name === name)
+  loadAllSchedules(function({ schedules, semester }) {
+    getScheduleValue(semester, function(scheduleValue) {
+      if (!scheduleValue) {
+        callback(1);
+        return;
+      }
+      const index = schedules.findIndex(sch => sch.semester === semester && sch.name === name);
       if (index === -1) {
-        console.error('INTERNAL ERROR: cant update schedule, does not exist', name);
+        console.error('INTERNAL ERROR: cannot update schedule, does not exist', name, semester);
         callback(2);
         return;
       }
@@ -137,23 +206,25 @@ function updateSchedule(name, callback) {
 }
 
 function clearCurrentSchedule() {
-  removeCurrentCookie(reloadPage);
+  getSemester(function(semester) {
+    removeCurrentCookie(semester, reloadPage);
+  });
 }
 
 function changeScheduleName(oldName, newName, callback) {
-  loadSchedules(function(schedules) {
-    if (oldName === newName) {
-      callback();
-      return;
-    }
+  if (oldName === newName) {
+    callback();
+    return;
+  }
 
-    const index = schedules.findIndex(sch => sch.name === oldName);
+  loadAllSchedules(function({ schedules, semester }) {
+    const index = schedules.findIndex(sch => sch.semester === semester && sch.name === oldName);
     if (index === -1) {
-      console.error('INTERNAL ERROR: cant change name, schedule does not exist', oldName);
+      console.error('INTERNAL ERROR: cannot change name, schedule does not exist', oldName, semester);
       callback(2);
       return;
     }
-    if (newName !== oldName && schedules.find(sch => sch.name === newName)) {
+    if (schedules.find(sch => sch.semester === semester && sch.name === newName)) {
       console.error('USER ERROR: new name is taken');
       callback(3);
       return;
@@ -186,8 +257,14 @@ chrome.runtime.onMessage.addListener(
       case 'clearCurrentSchedule':
         clearCurrentSchedule();
         break;
-      case 'loadSchedules':
-        loadSchedules(sendResponse);
+      case 'loadData':
+        loadThisSemesterSchedules(sendResponse);
+        break;
+      case 'prevSemester':
+        prevSemester(sendResponse);
+        break;
+      case 'nextSemester':
+        nextSemester(sendResponse);
         break;
       default:
         console.error('INTERNAL ERROR: no message listener for ', request);
