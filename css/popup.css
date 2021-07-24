@@ -31,12 +31,42 @@ h4 {
   align-items: center;
 }
 
-#current-semester-container h4 {
-  display: inline-block;
+#current-semester {
+  font-size: medium;
 }
 
 #current-semester {
   font-weight: bold;
+}
+
+.tooltip {
+  position: relative;
+}
+
+.tooltip .basetext {
+  font-size: large;
+  cursor: help;
+  font-weight: bold;
+}
+
+.tooltip .hovertext {
+  position: absolute;
+  visibility: hidden;
+  z-index: 1;
+  font-size: small;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  padding: 5px;
+  border-radius: 6px;
+
+  top: 110%;
+  left: -100px;
+}
+
+.tooltip:hover .hovertext {
+  visibility: visible;
 }
 
 #current-schedule-form input {
