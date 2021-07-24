@@ -3,6 +3,11 @@
 ## Unreleased
 
 
+## 0.3.9 - 2021-07-24
+### Changed
+* Set 2021-2 as the default semester
+
+
 
 ## 0.3.8 - 2020-12-16
 ### Changed
