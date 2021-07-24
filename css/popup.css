@@ -1,7 +1,8 @@
 body {
   /* background-color: #f1f8fd; */
   background-color: #e7eaf6;
-  width: 235px;
+  width: 250px;
+  margin: 0px;
 }
 
 .disabled {
@@ -14,14 +15,11 @@ h3 {
 
 h4 {
   margin: 0.5em 0.2em;
-  /* text-align: center; */
 }
 
 .container {
-  /* border: solid 1px gray; */
-  padding: 0.5em;
-  margin: 0.5em;
-  margin-bottom: 0.8em;
+  padding: 5px 20px 5px;
+  margin: 0px 0px 5px;
 }
 
 #current-semester-container {
@@ -29,6 +27,7 @@ h4 {
   justify-content: space-evenly;
   flex-direction: row;
   align-items: center;
+  background-color: #CCD1E5;
 }
 
 #current-semester {
