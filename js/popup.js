@@ -9,6 +9,7 @@ const formErrorText = document.getElementById('form-error-text');
 const currentSemesterText = document.getElementById('current-semester');
 const prevSemesterButton = document.getElementById('prev-semester');
 const nextSemesterButton = document.getElementById('next-semester');
+const settingsButton = document.getElementById('settings-button');
 
 /* Helper functions */
 function removeElementById(id) {
@@ -251,6 +252,10 @@ prevSemesterButton.onclick = function() {
 nextSemesterButton.onclick = function() {
   hideFormError();
   chrome.runtime.sendMessage({ type: 'nextSemester' }, _updateDataAndGoToSemesterURL);
+}
+
+settingsButton.onclick = function() {
+  chrome.runtime.openOptionsPage();
 }
 
 subscribeEnter(scheduleNameInput, () => saveScheduleButton.click());

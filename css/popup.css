@@ -22,12 +22,37 @@ h4 {
   margin: 0px 0px 5px;
 }
 
-#current-semester-container {
+#header-container {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  align-items: center;
+  background-color: #CCD1E5;
+}
+
+.header-subcontainer {
   display: flex;
   justify-content: space-evenly;
   flex-direction: row;
   align-items: center;
-  background-color: #CCD1E5;
+}
+
+#header-container:first-child * {
+  margin: 0 4px;
+}
+
+button.settings {
+  height: 16px;
+  width: 16px;
+  background-image: url('../img/settings-solid.png');
+}
+
+button.question {
+  height: 16px;
+  width: 16px;
+  background-image: url('../img/question.png');
+  cursor: help;
+  vertical-align: middle;
 }
 
 #current-semester {
@@ -40,12 +65,7 @@ h4 {
 
 .tooltip {
   position: relative;
-}
-
-.tooltip .basetext {
-  font-size: large;
-  cursor: help;
-  font-weight: bold;
+  display: inline-block;
 }
 
 .tooltip .hovertext {

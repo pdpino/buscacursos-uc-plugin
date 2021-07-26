@@ -5,15 +5,19 @@
     <link rel="stylesheet" href="./css/popup.css" type="text/css" />
   </head>
   <body>
-    <div id="current-semester-container" class="container">
-      <button id="prev-semester" title="Semestre anterior">&#60;</button>
-      <span id="current-semester">...</span>
-      <button id="next-semester" title="Semestre siguiente">&#62;</button>
-      <div class="tooltip">
-        <span class="basetext">?</span>
-        <span class="hovertext">
-          Asegúrate que el semestre conincida con la página web
-        </span>
+    <div id="header-container" class="container">
+      <div class="header-subcontainer">
+        <button id="prev-semester" title="Semestre anterior">&#60;</button>
+        <span id="current-semester">...</span>
+        <button id="next-semester" title="Semestre siguiente">&#62;</button>
+      </div>
+      <div class="header-subcontainer">
+        <button class="tooltip question image-button">
+          <span class="hovertext">
+            Asegúrate que el semestre conincida con la página web
+          </span>
+        </button>
+        <button id="settings-button" class="settings image-button" title="Configuración"></button>
       </div>
     </div>
     <div class="container">
