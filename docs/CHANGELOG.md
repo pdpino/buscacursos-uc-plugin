@@ -1,8 +1,13 @@
 # Changelog
 
 ## Unreleased
+
+
+## 0.4.0 - 2021-07-26
 ### Added
 * Support changing semester (remove hardcoded value)
+* Tooltip indicating semester must match with website
+* Settings button (redirects to extension settings)
 
 
 ## 0.3.9 - 2021-07-24
